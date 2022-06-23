@@ -1,6 +1,6 @@
 {
-  "name": "Case RSS - Sistema FIEP",
-  "description": "Portal de listagem e análise de notícias via RSS.",
+  "name": "yiisoft/yii2-app-basic",
+  "description": "Yii 2 Basic Project Template",
   "keywords": [
     "yii2",
     "framework",
