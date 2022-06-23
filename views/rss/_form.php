@@ -10,7 +10,12 @@ use yii\widgets\ActiveForm;
 
 <div class="rss-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => ['id' => Yii::$app->controller->id . '-form'],
+        'enableClientValidation' => true,
+        'enableAjaxValidation' => true
+    ]); ?>
+    <?= $form->errorSummary($model) ?>
 
     <?= $form->field($model, 'rssUrl')->textInput(['maxlength' => true]) ?>
 

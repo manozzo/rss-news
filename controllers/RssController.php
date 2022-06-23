@@ -12,6 +12,8 @@ use yii\base\NotSupportedException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
+use yii\widgets\ActiveForm;
 
 /**
  * RssController implements the CRUD actions for Rss model.
@@ -75,6 +77,11 @@ class RssController extends Controller
         $model = new Rss();
         $model->createdBy = Yii::$app->user->id;
 
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = Response::FORMAT_JSON;
+            return ActiveForm::validate($model);
+        }
+
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
                 return $this->redirect(['index']);
@@ -93,15 +100,16 @@ class RssController extends Controller
         $arrayRss = Rss::find()->where(['createdBy' => Yii::$app->user->id])->asArray()->all();
 
         $noticiaAvaliadaDataProvider = [];
+        $items = [];
         foreach ($arrayRss as $rss) {
-            $xml = simplexml_load_file($rss['rssUrl']);
+            $xml = simplexml_load_file($rss['rssUrl'], "SimpleXMLElement", LIBXML_NOCDATA);
             if ($xml === false) {
                 throw new NotSupportedException('A URL não é suportada: ' . $rss['rssUrl']);
             }
 
             $xmlToArray = json_decode(json_encode($xml), true);
-
             $items = $xmlToArray['channel']['item'];
+
             $classificacaoArray = [
                 'P+' => 'Completamente Positiva',
                 'P' => 'Positiva',
@@ -110,14 +118,7 @@ class RssController extends Controller
                 'N+' => 'Completamente Negativa',
                 'NONE' => 'Sem Polaridade'
             ];
-            $badgeColorArray = [
-                'P+' => 'success',
-                'P' => 'primary',
-                'NEU' => 'secondary',
-                'N' => 'warning',
-                'N+' => 'danger',
-                'NONE' => 'info'
-            ];
+
             foreach (array_slice($items, 0, 3) as $key => $itemNoticia) {
                 $descriptionString = $itemNoticia['description'];
                 if ($descriptionString) {
@@ -128,11 +129,11 @@ class RssController extends Controller
                         'pubDate' => $itemNoticia['pubDate'],
                         'decription' => $descriptionString,
                         'classificacao' => $classificacaoArray[$this->analisaNoticiaByRssUrl($descriptionString)],
-                        'badgeColor' => $badgeColorArray[$this->analisaNoticiaByRssUrl($descriptionString)]
                     ];
                 }
             }
         }
+        die;
 
         return $this->render(
             'noticias',
