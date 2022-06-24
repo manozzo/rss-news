@@ -111,14 +111,10 @@ class RssController extends Controller
         });
 
         foreach ($itemsFiltered as $key => $itemNoticia) {
-            $descriptionString = strip_tags(($itemNoticia['description']));
-            if ($descriptionString) {
-                $noticiasArray[$key] = [
-                    'title' => $itemNoticia['title'],
-                    'link' => $itemNoticia['link'],
-                    'description' => $descriptionString,
-                ];
-            }
+            $noticiasArray[$key] = [
+                'title' => $itemNoticia['title'],
+                'link' => $itemNoticia['link'],
+            ];
         }
 
         return $this->render(
@@ -159,11 +155,12 @@ class RssController extends Controller
         ];
 
         foreach ($noticiasSelected as $key => $itemNoticia) {
+            $descriptionString = strip_tags(($itemNoticia['description']));
             $noticiasClassificadas[$key] = [
                 'title' => $itemNoticia['title'],
                 'link' => $itemNoticia['link'],
-                'description' => $itemNoticia['description'],
-                'classificacao' => $classificacaoArray[$this->analisaNoticiaByRssUrl($itemNoticia['description'])]
+                'description' => $descriptionString,
+                'classificacao' => $classificacaoArray[$this->analisaNoticiaByRssUrl($descriptionString)]
             ];
         }
 

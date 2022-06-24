@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Noticias;
 use app\models\Rss;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -11,14 +12,21 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\RssSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$dataPoints = array(
-    array("y" => 2, "label" => 'Sem Polaridade'),
-    array("y" => 10, "label" => 'Completamente Negativa'),
-    array("y" => 5, "label" => 'Negativa'),
-    array("y" => 3, "label" => 'Neutra'),
-    array("y" => 2, "label" => 'Positiva'),
-    array("y" => 1, "label" => 'Completamente Positiva')
-);
+$checkNoticiasData = Noticias::find()->count();
+$this::registerJsVar('noData', !empty($checkNoticiasData));
+
+function countItemsClassificados($classificacao)
+{
+    return Noticias::find()->where(['classificacao' => $classificacao])->count();
+}
+$dataPoints = [
+    ["y" => countItemsClassificados('Sem Polaridade'), "label" => 'Sem Polaridade'],
+    ["y" => countItemsClassificados('Completamente Negativa'), "label" => 'Completamente Negativa'],
+    ["y" => countItemsClassificados('Negativa'), "label" => 'Negativa'],
+    ["y" => countItemsClassificados('Neutra'), "label" => 'Neutra'],
+    ["y" => countItemsClassificados('Positiva'), "label" => 'Positiva'],
+    ["y" => countItemsClassificados('Completamente Positiva'), "label" => 'Completamente Positiva']
+];
 
 $this->title = 'Listagem de Notícias';
 $this->params['breadcrumbs'][] = $this->title;
@@ -36,11 +44,18 @@ $content = ListView::widget([
     <h1 class="my-2"><?= Html::encode($this->title) ?></h1>
 
     <?php Pjax::begin(['timeout' => false, 'enablePushState' => false]); ?>
+
     <?php echo Html::tag(
         'div',
         $content,
         ['class' => 'rss-wrap']
     );
+    ?>
+
+    <?php
+    if (empty($checkNoticiasData)) {
+        echo Html::tag('p', 'Cadastre um RSS para exibir os dados. ' . Html::a('Adicionar RSS URL', ['create'], ['class' => 'btn btn-success']));
+    }
     ?>
 
     <?php Pjax::end(); ?>
@@ -58,11 +73,11 @@ $content = ListView::widget([
             },
             axisY: {
                 title: "Número de Notícias",
-                includeZero: true,
+                interval: 1,
             },
             data: [{
                 type: "bar",
-                yValueFormatString: "#,##0",
+                yValueFormatString: "0",
                 indexLabel: "{y}",
                 indexLabelPlacement: "inside",
                 indexLabelFontWeight: "bolder",
@@ -70,7 +85,9 @@ $content = ListView::widget([
                 dataPoints: <?= json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
             }]
         });
-        chart.render();
+        if (noData) {
+            chart.render();
+        }
 
     }
 </script>

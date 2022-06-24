@@ -34,7 +34,8 @@ class Noticias extends \yii\db\ActiveRecord
         return [
             [['rssId', 'title', 'link', 'description', 'classificacao'], 'required'],
             [['rssId'], 'integer'],
-            [['title', 'link', 'description', 'classificacao'], 'string', 'max' => 255],
+            [['title', 'link', 'description'], 'string', 'max' => 9000],
+            [['classificacao'], 'string', 'max' => 255],
             [['rssId'], 'exist', 'skipOnError' => true, 'targetClass' => Rss::class, 'targetAttribute' => ['rssId' => 'id']],
         ];
     }
