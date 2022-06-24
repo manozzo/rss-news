@@ -135,8 +135,13 @@ class RssController extends Controller
     public function actionListaNoticias($rssId)
     {
         $rssModel = $this->findModel($rssId);
-        $noticiasArray = [];
+        $noticiasModelArray = Noticias::find()->where(['rssId' => $rssId])->asArray()->all();
+        $noticiasModelArraybyTitle = [];
+        foreach ($noticiasModelArray as $key => $noticiaModel) {
+            $noticiasModelArraybyTitle[$key] = $noticiaModel['title'];
+        }
 
+        $noticiasArray = [];
         $itemsNoFilter = $this->recuperaNoticiasByRssURL($rssModel->rssUrl);
         $itemsFiltered = array_filter($itemsNoFilter, function ($itemWithDescription) {
             return !empty($itemWithDescription['description']);
@@ -152,6 +157,7 @@ class RssController extends Controller
         return $this->render(
             'listaNoticiasRss',
             [
+                'noticiasSelected' => $noticiasModelArraybyTitle,
                 'dataProvider' => new ArrayDataProvider([
                     'allModels'  => $noticiasArray,
                     'pagination' => [
@@ -187,7 +193,7 @@ class RssController extends Controller
         ];
 
         foreach ($noticiasSelected as $key => $itemNoticia) {
-            $descriptionString = ($itemNoticia['description']);
+            $descriptionString = strip_tags(($itemNoticia['description']));
             $dateFormated = date('Y-m-d', strtotime($itemNoticia['pubDate']));
             $noticiasClassificadas[$key] = [
                 'title' => $itemNoticia['title'],
@@ -198,18 +204,21 @@ class RssController extends Controller
             ];
         }
 
-        return $this->salvaNoticias($noticiasClassificadas, $rssId);
+        return $this->salvaNoticias($noticiasClassificadas, $rssId, $rssModel->createdBy);
     }
 
-    public function salvaNoticias($noticiasClassificadasArray, $rssId)
+    public function salvaNoticias($noticiasClassificadasArray, $rssId, $userId)
     {
         $transaction = Yii::$app->db->beginTransaction();
+        Noticias::deleteAll(['rssId' => $rssId]);
+
         foreach ($noticiasClassificadasArray as $noticiaClassificada) {
             $modelNoticia = Noticias::findOne(['title' => $noticiaClassificada['title']]);
             if (!$modelNoticia) {
                 $modelNoticia = new Noticias();
             }
             $modelNoticia->rssId = $rssId;
+            $modelNoticia->userId = $userId;
             $modelNoticia->title = $noticiaClassificada['title'];
             $modelNoticia->link = $noticiaClassificada['link'];
             $modelNoticia->description = $noticiaClassificada['description'];
@@ -226,7 +235,7 @@ class RssController extends Controller
 
     public function actionNoticias()
     {
-        $noticiasDataProviderArray = Noticias::find()->asArray()->all();
+        $noticiasDataProviderArray = Noticias::find()->where(['userId' => Yii::$app->user->id])->asArray()->all();
 
         return $this->render(
             'noticiasClassificadas',
@@ -270,6 +279,7 @@ class RssController extends Controller
      */
     public function actionDelete($id)
     {
+        Noticias::deleteAll(['rssId' => $id]);
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

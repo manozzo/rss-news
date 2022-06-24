@@ -12,12 +12,12 @@ use yii\widgets\Pjax;
 /* @var $searchModel app\models\RssSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$checkNoticiasData = Noticias::find()->count();
+$checkNoticiasData = Noticias::find()->where(['userId' => Yii::$app->user->id])->count();
 $this::registerJsVar('noData', !empty($checkNoticiasData));
 
 function countItemsClassificados($classificacao)
 {
-    return Noticias::find()->where(['classificacao' => $classificacao])->count();
+    return Noticias::find()->where(['classificacao' => $classificacao, 'userId' => Yii::$app->user->id])->count();
 }
 $dataPoints = [
     ["y" => countItemsClassificados('Sem Polaridade'), "label" => 'Sem Polaridade'],

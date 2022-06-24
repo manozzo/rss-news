@@ -17,12 +17,13 @@ class m220623_215135_create_noticias_table extends Migration
         $this->createTable($this->tableName, [
             'id' => $this->primaryKey()->notNull(),
             'rssId' => $this->integer(11)->notNull(),
+            'userId' => $this->integer(11)->notNull(),
             'title' => $this->text()->notNull(),
             'link' => $this->text()->notNull(),
             'description' => $this->text()->notNull(),
             'pubDate' => $this->date()->notNull(),
             'classificacao' => $this->string()->notNull(),
-        ], 'ENGINE=InnoDB');
+        ]);
     }
 
     public function safeDown()

@@ -19,7 +19,7 @@ class m220621_205121_create_user_table extends Migration
             'password' => $this->string(60)->notNull(),
             'authKey' => $this->string(60),
 
-        ], 'ENGINE=InnoDB');
+        ]);
     }
 
     /**

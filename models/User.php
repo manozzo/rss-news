@@ -130,4 +130,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasMany(Rss::class, ['createdBy' => 'id']);
     }
+
+    public function getNoticias()
+    {
+        return $this->hasMany(Noticias::class, ['userId' => 'id']);
+    }
 }

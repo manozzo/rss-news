@@ -1,9 +1,7 @@
 <?php
 
-use app\models\Rss;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /* @var $this yii\web\View */
@@ -25,6 +23,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         // 'filterModel' => $searchModel,
         'columns' => [
+            [
+                'class' => 'yii\grid\CheckboxColumn',
+                'checkboxOptions' => function ($model) use ($noticiasSelected) {
+                    $existeNoticia = in_array($model['title'], $noticiasSelected);
+                    return ['checked' => $existeNoticia];
+                }
+            ],
             'title' => [
                 'header' => 'Notícias',
                 'attribute' => 'title',
@@ -33,15 +38,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     return Html::a($model['title'], $model['link'], ['target' => '_blank']);
                 }
             ],
-            [
-                'class' => 'yii\grid\CheckboxColumn'
-            ],
         ],
     ]); ?>
 
     <?= Html::hiddenInput('rssId', Yii::$app->controller->actionParams['rssId']); ?>
+    <div class="float-right">
+        <?= Html::a('Voltar', Url::home() . 'rss/index', ['class' => 'btn btn-secondary']); ?>
 
-    <?= Html::submitButton('Classificar Notícias', ['class' => 'btn btn-success float-right']); ?>
+        <?= Html::submitButton('Classificar Notícias', ['class' => 'btn btn-success']); ?>
+    </div>
 
 
     <?= Html::endForm(); ?>

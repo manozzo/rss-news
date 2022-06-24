@@ -30,12 +30,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
-            'rssId',
+            // 'id',
+            // 'rssId',
             'title',
-            'link',
+            // 'link',
             'description',
-            //'classificacao',
+            'classificacao',
             [
                 'class' => ActionColumn::class,
                 'urlCreator' => function ($action, Noticias $model, $key, $index, $column) {

@@ -18,7 +18,7 @@ class m220622_160629_create_rss_table extends Migration
             'id' => $this->primaryKey()->notNull(),
             'rssUrl' => $this->string()->notNull(),
             'createdBy' => $this->integer(11)->notNull(),
-        ], 'ENGINE=InnoDB');
+        ]);
     }
 
     public function safeDown()

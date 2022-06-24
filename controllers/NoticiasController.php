@@ -22,7 +22,7 @@ class NoticiasController extends Controller
             parent::behaviors(),
             [
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -38,13 +38,14 @@ class NoticiasController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new NoticiasSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        // $searchModel = new NoticiasSearch();
+        // $dataProvider = $searchModel->search($this->request->queryParams);
 
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        // return $this->render('index', [
+        //     'searchModel' => $searchModel,
+        //     'dataProvider' => $dataProvider,
+        // ]);
+        return $this->goHome();
     }
 
     /**
@@ -55,9 +56,10 @@ class NoticiasController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        // return $this->render('view', [
+        //     'model' => $this->findModel($id),
+        // ]);
+        return $this->goHome();
     }
 
     /**
@@ -67,19 +69,20 @@ class NoticiasController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Noticias();
+        // $model = new Noticias();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
-        } else {
-            $model->loadDefaultValues();
-        }
+        // if ($this->request->isPost) {
+        //     if ($model->load($this->request->post()) && $model->save()) {
+        //         return $this->redirect(['view', 'id' => $model->id]);
+        //     }
+        // } else {
+        //     $model->loadDefaultValues();
+        // }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
+        // return $this->render('create', [
+        //     'model' => $model,
+        // ]);
+        return $this->goHome();
     }
 
     /**
@@ -91,15 +94,16 @@ class NoticiasController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+        // $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        // if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        //     return $this->redirect(['view', 'id' => $model->id]);
+        // }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+        // return $this->render('update', [
+        //     'model' => $model,
+        // ]);
+        return $this->goHome();
     }
 
     /**
@@ -111,9 +115,10 @@ class NoticiasController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        // $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        // return $this->redirect(['index']);
+        return $this->goHome();
     }
 
     /**

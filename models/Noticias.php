@@ -32,11 +32,12 @@ class Noticias extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['rssId', 'title', 'link', 'description', 'classificacao'], 'required'],
-            [['rssId'], 'integer'],
+            [['rssId', 'userId', 'title', 'link', 'description', 'classificacao'], 'required'],
+            [['rssId', 'userId'], 'integer'],
             [['title', 'link', 'description'], 'string', 'max' => 9000],
             [['classificacao'], 'string', 'max' => 255],
             [['rssId'], 'exist', 'skipOnError' => true, 'targetClass' => Rss::class, 'targetAttribute' => ['rssId' => 'id']],
+            [['userId'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['userId' => 'id']],
         ];
     }
 
@@ -63,5 +64,10 @@ class Noticias extends \yii\db\ActiveRecord
     public function getRss()
     {
         return $this->hasOne(Rss::class, ['id' => 'rssId']);
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'userId']);
     }
 }

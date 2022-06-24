@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Rss;
+use app\models\User;
 use yii\db\Migration;
 
 /**
@@ -22,6 +23,15 @@ class m220623_215354_add_noticias_rss_foreign_key extends Migration
             Rss::primaryKey(),
             'CASCADE',
         );
+
+        $this->addForeignKey(
+            'fk-noticias-userId-user-id',
+            $this->tableName,
+            'userId',
+            User::tableName(),
+            User::primaryKey(),
+            'CASCADE',
+        );
     }
 
     /**
@@ -34,6 +44,10 @@ class m220623_215354_add_noticias_rss_foreign_key extends Migration
             $this->tableName
         );
 
+        $this->dropForeignKey(
+            'fk-noticias-userId-user-id',
+            $this->tableName
+        );
         return false;
     }
 
