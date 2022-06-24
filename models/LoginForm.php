@@ -29,6 +29,7 @@ class LoginForm extends Model
             // email and password are both required
             [['email', 'password'], 'required'],
             ['email', 'email'],
+            [['email', 'password'], 'trim'],
             // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
@@ -40,8 +41,9 @@ class LoginForm extends Model
     {
         return [
             'email' => 'E-mail',
-            'name' => Yii::t('app', 'Name'),
-            'password' => Yii::t('app', 'Password'),
+            'name' => 'Nome',
+            'password' => 'Senha',
+            'rememberMe' => 'Manter-me logado'
         ];
     }
 

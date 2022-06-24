@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Noticias;
 use app\models\Rss;
 use app\models\RssSearch;
+use DateTime;
 use Exception;
 use SimpleXMLElement;
 use Yii;
@@ -99,6 +100,37 @@ class RssController extends Controller
         ]);
     }
 
+    public function recuperaNoticiasByRssURL($rssURL)
+    {
+        $items = [];
+        $xml = simplexml_load_file($rssURL, "SimpleXMLElement", LIBXML_NOCDATA);
+        if ($xml === false) {
+            throw new NotSupportedException('A URL não é suportada: ' . $rssURL);
+        }
+
+        $xmlToJson = json_encode($xml);
+        $xmlToArray = json_decode($xmlToJson, true);
+
+        $items = $xmlToArray['channel']['item'];
+
+        return $items;
+    }
+
+    public function analisaNoticiaByRssUrl($noticiaDescription)
+    {
+        $curl = new curl\Curl();
+
+        $response = $curl->setPostParams([
+            'key' => getenv('MEANING_SENTIMENTAL_API_KEY'),
+            'txt' => $noticiaDescription,
+        ])
+            ->post('https://api.meaningcloud.com/sentiment-2.1');
+
+        $responseArray = json_decode($response, true);
+
+        return isset($responseArray['score_tag']) ? $responseArray['score_tag'] : false;
+    }
+
 
     public function actionListaNoticias($rssId)
     {
@@ -120,7 +152,7 @@ class RssController extends Controller
         return $this->render(
             'listaNoticiasRss',
             [
-                'dataProvider' => new \yii\data\ArrayDataProvider([
+                'dataProvider' => new ArrayDataProvider([
                     'allModels'  => $noticiasArray,
                     'pagination' => [
                         'pageSize' => 20,
@@ -155,11 +187,13 @@ class RssController extends Controller
         ];
 
         foreach ($noticiasSelected as $key => $itemNoticia) {
-            $descriptionString = strip_tags(($itemNoticia['description']));
+            $descriptionString = ($itemNoticia['description']);
+            $dateFormated = date('Y-m-d', strtotime($itemNoticia['pubDate']));
             $noticiasClassificadas[$key] = [
                 'title' => $itemNoticia['title'],
                 'link' => $itemNoticia['link'],
                 'description' => $descriptionString,
+                'pubDate' => $dateFormated,
                 'classificacao' => $classificacaoArray[$this->analisaNoticiaByRssUrl($descriptionString)]
             ];
         }
@@ -179,6 +213,7 @@ class RssController extends Controller
             $modelNoticia->title = $noticiaClassificada['title'];
             $modelNoticia->link = $noticiaClassificada['link'];
             $modelNoticia->description = $noticiaClassificada['description'];
+            $modelNoticia->pubDate = $noticiaClassificada['pubDate'];
             $modelNoticia->classificacao = $noticiaClassificada['classificacao'];
             if (!$modelNoticia->save()) {
                 $transaction->rollBack();
@@ -187,22 +222,6 @@ class RssController extends Controller
         }
         $transaction->commit();
         return $this->redirect(['noticias']);
-    }
-
-    public function recuperaNoticiasByRssURL($rssURL)
-    {
-        $items = [];
-        $xml = simplexml_load_file($rssURL, "SimpleXMLElement", LIBXML_NOCDATA);
-        if ($xml === false) {
-            throw new NotSupportedException('A URL não é suportada: ' . $rssURL);
-        }
-
-        $xmlToJson = json_encode($xml);
-        $xmlToArray = json_decode($xmlToJson, true);
-
-        $items = $xmlToArray['channel']['item'];
-
-        return $items;
     }
 
     public function actionNoticias()
@@ -220,21 +239,6 @@ class RssController extends Controller
                 ])
             ]
         );
-    }
-
-    public function analisaNoticiaByRssUrl($noticiaDescription)
-    {
-        $curl = new curl\Curl();
-
-        $response = $curl->setPostParams([
-            'key' => getenv('MEANING_SENTIMENTAL_API_KEY'),
-            'txt' => $noticiaDescription,
-        ])
-            ->post('https://api.meaningcloud.com/sentiment-2.1');
-
-        $responseArray = json_decode($response, true);
-
-        return isset($responseArray['score_tag']) ? $responseArray['score_tag'] : false;
     }
 
     /**

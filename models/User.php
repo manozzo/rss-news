@@ -34,6 +34,7 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             [['email', 'name', 'password'], 'required'],
             ['email', 'email'],
+            [['email', 'name', 'password'], 'trim'],
             [['email'], 'string', 'max' => 128],
             [['name'], 'string', 'max' => 255],
             [['password'], 'string', 'max' => 60],
@@ -47,8 +48,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             'email' => 'E-mail',
-            'name' => Yii::t('app', 'Name'),
-            'password' => Yii::t('app', 'Password'),
+            'name' => 'Nome',
+            'password' => 'Senha',
         ];
     }
 

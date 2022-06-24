@@ -20,6 +20,7 @@ class m220623_215135_create_noticias_table extends Migration
             'title' => $this->text()->notNull(),
             'link' => $this->text()->notNull(),
             'description' => $this->text()->notNull(),
+            'pubDate' => $this->date()->notNull(),
             'classificacao' => $this->string()->notNull(),
         ], 'ENGINE=InnoDB');
     }

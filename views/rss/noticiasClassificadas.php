@@ -45,6 +45,7 @@ $content = ListView::widget([
 
     <?php Pjax::begin(['timeout' => false, 'enablePushState' => false]); ?>
 
+
     <?php echo Html::tag(
         'div',
         $content,

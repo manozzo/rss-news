@@ -12,7 +12,6 @@ use yii\widgets\Pjax;
 
 $this->title = 'Listagem Notícias RSS';
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 <div class="lista-noticias-index">
 
