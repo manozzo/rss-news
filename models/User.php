@@ -124,4 +124,9 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->password === $password;
     }
+
+    public function getRss()
+    {
+        return $this->hasMany(Rss::class, ['createdBy' => 'id']);
+    }
 }

@@ -10,14 +10,6 @@ use yii\widgets\Pjax;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\RssSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-$classificacaoArray = [
-    'P+' => 'Completamente Positiva',
-    'P' => 'Positiva',
-    'NEU' => 'Neutra',
-    'N' => 'Negativa',
-    'N+' => 'Completamente Negativa',
-    'NONE' => 'Sem Polaridade'
-];
 
 $dataPoints = array(
     array("y" => 2, "label" => 'Sem Polaridade'),
@@ -39,11 +31,11 @@ $content = ListView::widget([
 
 
 ?>
-<div class="rss-noticias">
+<div class="rss-noticias-classificadas">
 
     <h1 class="my-2"><?= Html::encode($this->title) ?></h1>
 
-    <?php Pjax::begin(); ?>
+    <?php Pjax::begin(['timeout' => false, 'enablePushState' => false]); ?>
     <?php echo Html::tag(
         'div',
         $content,

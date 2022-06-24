@@ -16,12 +16,8 @@ $badgeColorArray = [
     <p class="h4">
         <a href="<?= $model['link'] ?>" target="_new"><?= $model['title']; ?></a>
     </p>
-    <p class="text-muted">
-        <?= Yii::$app->formatter->asDatetime($model['pubDate']); ?>
-    </p>
     <p>
-        <?= $model['decription']; ?>
+        <?= $model['description']; ?>
     </p>
-    <small class="d-block">Fonte: <cite title="<?= $model['rssTitle'] ?>"><?= $model['rssTitle'] ?></cite></small>
     <?= Html::tag('span', $model['classificacao'], ['class' => 'badge badge-' . $badgeColorArray[$model['classificacao']]]) ?>
 </div>

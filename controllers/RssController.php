@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Noticias;
 use app\models\Rss;
 use app\models\RssSearch;
+use Exception;
 use SimpleXMLElement;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -12,6 +14,7 @@ use yii\base\NotSupportedException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Url;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
 
@@ -25,17 +28,18 @@ class RssController extends Controller
      */
     public function behaviors()
     {
-        return array_merge(
-            parent::behaviors(),
+        return [
             [
-                'verbs' => [
-                    'class' => VerbFilter::class,
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
+                'class' => 'yii\filters\AjaxFilter',
+                'only' => ['view']
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
                 ],
-            ]
-        );
+            ],
+        ];
     }
 
     /**
@@ -95,61 +99,130 @@ class RssController extends Controller
         ]);
     }
 
-    public function actionNoticias()
+
+    public function actionListaNoticias($rssId)
     {
-        $arrayRss = Rss::find()->where(['createdBy' => Yii::$app->user->id])->asArray()->all();
+        $rssModel = $this->findModel($rssId);
+        $noticiasArray = [];
 
-        $noticiaAvaliadaDataProvider = [];
-        $items = [];
-        foreach ($arrayRss as $rss) {
-            $xml = simplexml_load_file($rss['rssUrl'], "SimpleXMLElement", LIBXML_NOCDATA);
-            if ($xml === false) {
-                throw new NotSupportedException('A URL não é suportada: ' . $rss['rssUrl']);
-            }
+        $itemsNoFilter = $this->recuperaNoticiasByRssURL($rssModel->rssUrl);
+        $itemsFiltered = array_filter($itemsNoFilter, function ($itemWithDescription) {
+            return !empty($itemWithDescription['description']);
+        });
 
-            $xmlToArray = json_decode(json_encode($xml), true);
-            $items = $xmlToArray['channel']['item'];
-
-            $classificacaoArray = [
-                'P+' => 'Completamente Positiva',
-                'P' => 'Positiva',
-                'NEU' => 'Neutra',
-                'N' => 'Negativa',
-                'N+' => 'Completamente Negativa',
-                'NONE' => 'Sem Polaridade'
-            ];
-
-            foreach (array_slice($items, 0, 3) as $key => $itemNoticia) {
-                $descriptionString = $itemNoticia['description'];
-                if ($descriptionString) {
-                    $noticiaAvaliadaDataProvider[$key] = [
-                        'rssTitle' => $xmlToArray['channel']['title'],
-                        'title' => $itemNoticia['title'],
-                        'link' => $itemNoticia['link'],
-                        'pubDate' => $itemNoticia['pubDate'],
-                        'decription' => $descriptionString,
-                        'classificacao' => $classificacaoArray[$this->analisaNoticiaByRssUrl($descriptionString)],
-                    ];
-                }
+        foreach ($itemsFiltered as $key => $itemNoticia) {
+            $descriptionString = strip_tags(($itemNoticia['description']));
+            if ($descriptionString) {
+                $noticiasArray[$key] = [
+                    'title' => $itemNoticia['title'],
+                    'link' => $itemNoticia['link'],
+                    'description' => $descriptionString,
+                ];
             }
         }
-        die;
 
         return $this->render(
-            'noticias',
+            'listaNoticiasRss',
             [
                 'dataProvider' => new \yii\data\ArrayDataProvider([
-                    'allModels'  => $noticiaAvaliadaDataProvider,
+                    'allModels'  => $noticiasArray,
+                    'pagination' => [
+                        'pageSize' => 20,
+                    ],
+                ])
+            ]
+        );
+    }
+
+    public function actionClassificaNoticias()
+    {
+        $rssId = Yii::$app->request->post('rssId');
+        $rssModel = $this->findModel($rssId);
+        $noticias = $this->recuperaNoticiasByRssURL($rssModel->rssUrl);
+        $checkboxSelectedArray = Yii::$app->request->post('selection');
+        $noticiasSelected = [];
+        $noticiasClassificadas = [];
+        if (empty($checkboxSelectedArray)) {
+            return $this->redirect(['index']);
+        }
+        foreach ($checkboxSelectedArray as $key => $noticiaIndex) {
+            $noticiasSelected[$key] = $noticias[$noticiaIndex];
+        }
+
+        $classificacaoArray = [
+            'P+' => 'Completamente Positiva',
+            'P' => 'Positiva',
+            'NEU' => 'Neutra',
+            'N' => 'Negativa',
+            'N+' => 'Completamente Negativa',
+            'NONE' => 'Sem Polaridade'
+        ];
+
+        foreach ($noticiasSelected as $key => $itemNoticia) {
+            $noticiasClassificadas[$key] = [
+                'title' => $itemNoticia['title'],
+                'link' => $itemNoticia['link'],
+                'description' => $itemNoticia['description'],
+                'classificacao' => $classificacaoArray[$this->analisaNoticiaByRssUrl($itemNoticia['description'])]
+            ];
+        }
+
+        return $this->salvaNoticias($noticiasClassificadas, $rssId);
+    }
+
+    public function salvaNoticias($noticiasClassificadasArray, $rssId)
+    {
+        $transaction = Yii::$app->db->beginTransaction();
+        foreach ($noticiasClassificadasArray as $noticiaClassificada) {
+            $modelNoticia = Noticias::findOne(['title' => $noticiaClassificada['title']]);
+            if (!$modelNoticia) {
+                $modelNoticia = new Noticias();
+            }
+            $modelNoticia->rssId = $rssId;
+            $modelNoticia->title = $noticiaClassificada['title'];
+            $modelNoticia->link = $noticiaClassificada['link'];
+            $modelNoticia->description = $noticiaClassificada['description'];
+            $modelNoticia->classificacao = $noticiaClassificada['classificacao'];
+            if (!$modelNoticia->save()) {
+                $transaction->rollBack();
+                throw (new Exception(implode("; ", $modelNoticia->getErrorSummary(true))));
+            }
+        }
+        $transaction->commit();
+        return $this->redirect(['noticias']);
+    }
+
+    public function recuperaNoticiasByRssURL($rssURL)
+    {
+        $items = [];
+        $xml = simplexml_load_file($rssURL, "SimpleXMLElement", LIBXML_NOCDATA);
+        if ($xml === false) {
+            throw new NotSupportedException('A URL não é suportada: ' . $rssURL);
+        }
+
+        $xmlToJson = json_encode($xml);
+        $xmlToArray = json_decode($xmlToJson, true);
+
+        $items = $xmlToArray['channel']['item'];
+
+        return $items;
+    }
+
+    public function actionNoticias()
+    {
+        $noticiasDataProviderArray = Noticias::find()->asArray()->all();
+
+        return $this->render(
+            'noticiasClassificadas',
+            [
+                'dataProvider' => new \yii\data\ArrayDataProvider([
+                    'allModels'  => $noticiasDataProviderArray,
                     'pagination' => [
                         'pageSize' => 5,
                     ],
                 ])
             ]
         );
-
-        // return $this->render('noticias', [
-        //     'noticiaAvaliadaDataProvider' => $noticiaAvaliadaDataProvider,
-        // ]);
     }
 
     public function analisaNoticiaByRssUrl($noticiaDescription)
@@ -214,6 +287,6 @@ class RssController extends Controller
             return $model;
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        throw new NotFoundHttpException('Cadastro não encontrado.');
     }
 }

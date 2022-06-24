@@ -29,36 +29,43 @@ AppAsset::register($this);
     <?php $this->beginBody() ?>
 
     <header>
-        <?php
-        NavBar::begin([
-            'brandLabel' => Yii::$app->name,
-            'brandUrl' => Url::home() . 'site/index',
-            'options' => [
-                'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
-            ],
-        ]);
-        echo Nav::widget([
-            'options' => ['class' => 'navbar-nav'],
-            'items' => [
-                ['label' => 'Home', 'url' => ['/site/index']],
-                ['label' => 'RSS', 'url' => ['/rss/index'], 'visible' => !Yii::$app->user->isGuest],
-                ['label' => 'Notícias', 'url' => ['/rss/noticias'], 'visible' => !Yii::$app->user->isGuest],
-                ['label' => 'Sobre', 'url' => ['/site/sobre']],
-                // ['label' => 'Contact', 'url' => ['/site/contact']],
-                Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]
-                ) : ('<li>'
-                    . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
-                    . Html::submitButton(
-                        'Logout (' . Yii::$app->user->identity->email . ')',
-                        ['class' => 'btn btn-link logout']
-                    )
-                    . Html::endForm()
-                    . '</li>'
-                )
-            ],
-        ]);
-        NavBar::end();
-        ?>
+        <div>
+            <div>
+                <?php
+                NavBar::begin([
+                    'brandLabel' => Yii::$app->name,
+                    'brandUrl' => Url::home() . 'site/index',
+                    'options' => [
+                        'class' => 'navbar navbar-expand-md navbar-dark bg-dark fixed-top',
+                    ],
+                ]); ?>
+            </div>
+            <div>
+                <?= Nav::widget([
+                    'options' => ['class' => 'navbar-nav'],
+                    'items' => [
+                        ['label' => 'Home', 'url' => ['/site/index']],
+                        ['label' => 'RSS', 'url' => ['/rss/index'], 'visible' => !Yii::$app->user->isGuest],
+                        ['label' => 'Notícias Classificadas', 'url' => ['/rss/noticias'], 'visible' => !Yii::$app->user->isGuest],
+                        ['label' => 'Sobre', 'url' => ['/site/sobre']],
+                        // ['label' => 'Contact', 'url' => ['/site/contact']],
+                        Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]
+                        ) : ('<li>'
+                            . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
+                            . Html::submitButton(
+                                'Logout (' . Yii::$app->user->identity->email . ')',
+                                ['class' => 'btn btn-link logout']
+                            )
+                            . Html::endForm()
+                            . '</li>'
+                        )
+                    ],
+                ]);
+                NavBar::end();
+                ?>
+                <div>
+
+                </div>
     </header>
 
     <main role="main" class="flex-shrink-0">

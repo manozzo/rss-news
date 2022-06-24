@@ -29,7 +29,6 @@ class m220622_175502_add_rss_foreign_key extends Migration
      */
     public function safeDown()
     {
-        // drop foreign key for table `{{%user}}`
         $this->dropForeignKey(
             'fk-rss-createdBy-user-id',
             $this->tableName

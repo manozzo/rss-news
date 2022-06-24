@@ -3,13 +3,13 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Rss */
+/* @var $model app\models\Noticias */
 
-$this->title = 'Cadastrar RSS';
-$this->params['breadcrumbs'][] = ['label' => 'Rsses', 'url' => ['index']];
+$this->title = 'Cadastrar Noticias';
+$this->params['breadcrumbs'][] = ['label' => 'Noticias', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="rss-create">
+<div class="noticias-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

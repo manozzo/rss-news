@@ -87,9 +87,9 @@ class Rss extends \yii\db\ActiveRecord
             $this->addError($attribute, 'Digite uma url válida.');
             return false;
         }
-        // $this->isXMLFileValid($this->rssUrl);
         $xml = simplexml_load_file($this->rssUrl);
-        $xmlToArray = json_decode(json_encode($xml), true);
+        $xmlToJson = json_encode($xml);
+        $xmlToArray = json_decode($xmlToJson, true);
         if (!isset($xmlToArray['@attributes'])) {
             $this->addError($attribute, 'Digite um RSS válido de versão 2.0');
             return false;
@@ -110,5 +110,10 @@ class Rss extends \yii\db\ActiveRecord
     public function getCreatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'createdBy']);
+    }
+
+    public function getNoticias()
+    {
+        return $this->hasMany(Noticias::class, ['rssId' => 'id']);
     }
 }

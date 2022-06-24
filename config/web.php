@@ -58,6 +58,7 @@ $config = [
                 // ...
                 // will handle `gii/default/login` uri and makes infinite redirection loop circle
                 'gii/<controller:\w+>/<action:[\w-]+>' => 'gii/<controller>/<action>',
+                '' => 'site/index',
                 '<controller:\w+>/<action:\w+>/<id:\w+>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
                 // ...
@@ -65,7 +66,7 @@ $config = [
         ],
         'formatter' => [
             'dateFormat' => 'php:d/m/Y',
-            'datetimeFormat' => 'd/M/Y H:m:s z',
+            'datetimeFormat' => 'd/M/Y H:m:s',
             'decimalSeparator' => ',',
             'thousandSeparator' => '.',
             'currencyCode' => 'R$',

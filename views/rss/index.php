@@ -21,15 +21,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Adicionar RSS URL', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php Pjax::begin(); ?>
-    <?php // echo $this->render('_search', ['model' => $searchModel]);
-    ?>
+    <?php Pjax::begin(['id' => 'pjax-' . Yii::$app->controller->id, 'timeout' => false, 'enablePushState' => false]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
+        // 'filterModel' => $searchModel,
         'columns' => [
-            'rssUrl',
+            'rssUrl' => [
+                'header' => 'RSS URL',
+                'attribute' => 'rssUrl',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::a($model->rssUrl, 'lista-noticias?rssId='.$model->id);
+                }
+            ],
             [
                 'class' => ActionColumn::class,
                 'header' => 'Ações',
@@ -39,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ]); ?>
+
 
     <?php Pjax::end(); ?>
 

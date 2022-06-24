@@ -17,12 +17,12 @@ use yii\widgets\ActiveForm;
     ]); ?>
     <?= $form->errorSummary($model) ?>
 
-    <?= $form->field($model, 'rssUrl')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'rssUrl')->textInput(['maxlength' => true, 'placeholder' => 'Insira a URL do RSS...',]) ?>
 
     <!-- <?= $form->field($model, 'createdBy')->textInput() ?> -->
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Salvar', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
