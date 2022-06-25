@@ -47,8 +47,6 @@ AppAsset::register($this);
                         ['label' => 'Home', 'url' => ['/site/index']],
                         ['label' => 'RSS', 'url' => ['/rss/index'], 'visible' => !Yii::$app->user->isGuest],
                         ['label' => 'Notícias Classificadas', 'url' => ['/rss/noticias'], 'visible' => !Yii::$app->user->isGuest],
-                        ['label' => 'Sobre', 'url' => ['/site/sobre']],
-                        // ['label' => 'Contact', 'url' => ['/site/contact']],
                         Yii::$app->user->isGuest ? (['label' => 'Login', 'url' => ['/site/login']]
                         ) : ('<li>'
                             . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
