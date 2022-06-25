@@ -66,7 +66,7 @@ $config = [
         ],
         'formatter' => [
             'dateFormat' => 'php:d/m/Y',
-            'datetimeFormat' => 'd/M/Y H:m:s',
+            'datetimeFormat' => 'd/M/Y',
             'decimalSeparator' => ',',
             'thousandSeparator' => '.',
             'currencyCode' => 'R$',

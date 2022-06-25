@@ -33,6 +33,7 @@ class Rss extends \yii\db\ActiveRecord
         return [
             [['rssUrl', 'createdBy'], 'required'],
             [['rssUrl'], 'checkUrlVersion'],
+            [['rssUrl', 'createdBy'], 'unique', 'targetAttribute' => ['rssUrl', 'createdBy']],
             [['createdBy'], 'integer'],
             [['rssUrl'], 'string', 'max' => 255],
             [['createdBy'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['createdBy' => 'id']],
@@ -46,7 +47,7 @@ class Rss extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'rssUrl' => 'Rss Url',
+            'rssUrl' => 'RSS URL',
             'createdBy' => 'Created By',
         ];
     }

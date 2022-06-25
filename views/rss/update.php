@@ -5,7 +5,7 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Rss */
 
-$this->title = 'Atualizar RSS: ' . $model->id;
+$this->title = 'Atualizar RSS';
 $this->params['breadcrumbs'][] = ['label' => 'Rsses', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';

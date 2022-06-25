@@ -16,6 +16,9 @@ $badgeColorArray = [
     <p class="h4">
         <a href="<?= $model['link'] ?>" target="_new"><?= $model['title']; ?></a>
     </p>
+    <p class="text-muted">
+        <?php echo Yii::$app->formatter->asDatetime($model['pubDate']); ?>
+    </p>
     <p>
         <?= $model['description']; ?>
     </p>

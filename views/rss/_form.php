@@ -19,8 +19,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'rssUrl')->textInput(['maxlength' => true, 'placeholder' => 'Insira a URL do RSS...',]) ?>
 
-    <!-- <?= $form->field($model, 'createdBy')->textInput() ?> -->
-
     <div class="form-group">
         <?= Html::submitButton('Salvar', ['class' => 'btn btn-success']) ?>
     </div>
