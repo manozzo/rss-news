@@ -3,7 +3,7 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 try {
-    $dotenv = Dotenv\Dotenv::create(__DIR__ . '/../');
+    $dotenv = Dotenv\Dotenv::create(__DIR__ . '/../.env');
     $dotenv->load();
 } catch (\Throwable $th) {
     throw $th;
