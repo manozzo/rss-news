@@ -34,6 +34,9 @@ $config = [
             'newFileOwnership' => '1000:1000', # Default WSL user id
             'newFileMode' => 0660,
         ],
+        'heroku' => [
+            'class' => 'purrweb\heroku\HerokuGeneratorController',
+        ],
     ],
 ];
 
